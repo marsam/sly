@@ -83,6 +83,7 @@ for output printed to the REPL (not for evaluation results)")
 
 (defvar sly-mrepl-mode-map
   (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map comint-mode-map)
     (define-key map (kbd "RET")     'sly-mrepl-return)
     (define-key map [return]        'sly-mrepl-return)
     (define-key map (kbd "TAB")     'sly-mrepl-indent-and-complete-symbol)
@@ -170,7 +171,6 @@ for output printed to the REPL (not for evaluation results)")
   (add-hook 'kill-emacs-hook 'sly-mrepl--save-all-histories)
   ;;(set (make-local-variable 'comint-get-old-input) 'ielm-get-old-input)
   (set-syntax-table lisp-mode-syntax-table)
-  (set-keymap-parent sly-mrepl-mode-map nil)
 
   ;; Add hooks to isearch-mode placed strategically after the ones
   ;; set by comint.el itself.
