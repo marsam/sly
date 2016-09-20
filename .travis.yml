@@ -1,25 +1,33 @@
 language: emacs
 
 env:
-  - "CHECK_TARGET=check-core  LISP=sbcl  EMACS=emacs24"
-  # - "CHECK_TARGET=check-core  LISP=cmucl EMACS=emacs24"
-  - "CHECK_TARGET=check-core  LISP=ccl   EMACS=emacs24"
-  - "CHECK_TARGET=check-fancy LISP=sbcl  EMACS=emacs24"
-  # - "CHECK_TARGET=check-fancy LISP=cmucl EMACS=emacs24"
-  - "CHECK_TARGET=check-fancy LISP=ccl   EMACS=emacs24"
+  - CHECK_TARGET=check-core  LISP=sbcl  EMACS_VERSION=24.5
+  - CHECK_TARGET=check-core  LISP=sbcl  EMACS_VERSION=25.1
+
+  - CHECK_TARGET=check-core  LISP=ccl   EMACS_VERSION=24.5
+  - CHECK_TARGET=check-core  LISP=ccl   EMACS_VERSION=25.1
+
+  - CHECK_TARGET=check-fancy  LISP=sbcl  EMACS_VERSION=24.5
+  - CHECK_TARGET=check-fancy  LISP=sbcl  EMACS_VERSION=25.1
+
+  - CHECK_TARGET=check-fancy  LISP=ccl    EMACS_VERSION=24.5
+  - CHECK_TARGET=check-fancy  LISP=ccl    EMACS_VERSION=25.1
 
   # also, for emacs24/sbcl test some more contribs in isolation
-  - "CHECK_TARGET=check-mrepl LISP=sbcl EMACS=emacs24"
-  - "CHECK_TARGET=check-indentation LISP=sbcl EMACS=emacs24"
+  - CHECK_TARGET=check-mrepl  LISP=sbcl  EMACS_VERSION=24.5
+  - CHECK_TARGET=check-mrepl  LISP=sbcl  EMACS_VERSION=25.1
+
+  - CHECK_TARGET=check-indentation  LISP=sbcl  EMACS_VERSION=24.5
+  - CHECK_TARGET=check-indentation  LISP=sbcl  EMACS_VERSION=25.1
+
+# XXX: cl-travis install.sh requires sudo
+sudo: required
 
 install:
-  - curl https://raw.githubusercontent.com/joaotavora/cl-travis/master/install.sh | bash
-  - if [ "$EMACS" = "emacs24" ]; then
-        sudo add-apt-repository -y ppa:cassou/emacs &&
-        sudo apt-get -qq update &&
-        sudo apt-get -qq -f install &&
-        sudo apt-get -qq install emacs24-nox;
-    fi
+  - export PATH="$HOME/bin:$PATH"
+  - curl https://raw.githubusercontent.com/luismbo/cl-travis/master/install.sh | bash
+  - curl -SOL https://github.com/flycheck/emacs-travis/raw/master/emacs-travis.mk
+  - make -f emacs-travis.mk install_emacs
 
 script:
-  - make LISP=$LISP EMACS=$EMACS $CHECK_TARGET
+  - make LISP=$LISP $CHECK_TARGET
