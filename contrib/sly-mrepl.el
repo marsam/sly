@@ -963,17 +963,19 @@ handle to distinguish the new buffer from the existing."
           (t
            (sly-error "No input at point")))))
 
+;; TODO(marsam): Replace `sly-mrepl--prompt' property with `comint-last-prompt'
+(defun sly-mrepl--prompt-prop-change (point)
+  (previous-single-property-change point 'sly-mrepl--prompt))
+
 (defun sly-mrepl-guess-package (&optional point interactive)
   (interactive (list (point) t))
   (let* ((point (or point (point)))
-         (probe
-          (previous-single-property-change point
-                                           'sly-mrepl--prompt))
+         (probe (sly-mrepl--prompt-prop-change point))
          (package (and probe
                        (or (get-text-property probe 'sly-mrepl--prompt)
-                           (get-text-property (previous-single-property-change
-                                               probe 'sly-mrepl--prompt)
-                                              'sly-mrepl--prompt)))))
+                           (and (sly-mrepl--prompt-prop-change probe)
+                                (get-text-property (sly-mrepl--prompt-prop-change probe)
+                                                   'sly-mrepl--prompt))))))
     (when interactive
       (sly-message "Guessed package \"%s\"" package))
     package))
